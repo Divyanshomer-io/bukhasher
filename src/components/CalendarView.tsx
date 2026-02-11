@@ -63,10 +63,8 @@ export function CalendarView({ onSelectDate }: CalendarViewProps) {
           const dateStr = format(day, 'yyyy-MM-dd');
           const today = isToday(day);
           return (
-            <motion.button
+            <button
               key={dateStr}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
               onClick={() => onSelectDate(dateStr)}
               className={`aspect-square rounded-xl flex items-center justify-center text-sm font-medium transition-all ${
                 today
@@ -75,7 +73,7 @@ export function CalendarView({ onSelectDate }: CalendarViewProps) {
               }`}
             >
               {format(day, 'd')}
-            </motion.button>
+            </button>
           );
         })}
       </div>

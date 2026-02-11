@@ -18,6 +18,9 @@ export default function Index() {
     setQuote(MEME_QUOTES[Math.floor(Math.random() * MEME_QUOTES.length)]);
   }, []);
 
+  // Auto-redirect logged in users to calendar (show calendar directly)
+  const [showProfile, setShowProfile] = useState(false);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -44,9 +47,7 @@ export default function Index() {
           >
             🐯 BukhaSher
           </motion.h1>
-          <p className="text-sm text-muted-foreground font-display">
-            "Created by – Divyanshu Lila"
-          </p>
+          
           <motion.p
             key={quote}
             initial={{ opacity: 0 }}
@@ -60,6 +61,18 @@ export default function Index() {
         {/* Auth section */}
         {!user ? (
           <LoginForm onLogin={login} />
+        ) : showProfile ? (
+          <>
+            <LoginForm onLogin={async (name, avatar) => {
+              await login(name, avatar);
+              setShowProfile(false);
+            }} />
+            <div className="text-center">
+              <Button variant="ghost" onClick={() => setShowProfile(false)} className="text-muted-foreground">
+                ← Back to Calendar
+              </Button>
+            </div>
+          </>
         ) : (
           <>
             {/* Logged in header */}
@@ -75,9 +88,14 @@ export default function Index() {
                   <p className="text-xs text-muted-foreground">Ready to order!</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={logout} className="rounded-xl">
-                <LogOut className="h-4 w-4" />
-              </Button>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="icon" onClick={() => setShowProfile(true)} className="rounded-xl">
+                  <span className="text-sm">✏️</span>
+                </Button>
+                <Button variant="ghost" size="icon" onClick={logout} className="rounded-xl">
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
             </motion.div>
 
             {/* Calendar */}
@@ -103,6 +121,9 @@ export default function Index() {
           transition={{ delay: 0.5 }}
           className="text-center py-6"
         >
+          <p className="text-sm text-muted-foreground font-display mb-1">
+            "Created by – Divyanshu Lila"
+          </p>
           <p className="text-sm text-muted-foreground italic">
             "Built for hungry legends." 🍕
           </p>
