@@ -14,7 +14,166 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      balances: {
+        Row: {
+          id: string
+          net_amount: number
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          id?: string
+          net_amount?: number
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          id?: string
+          net_amount?: number
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "balances_user_a_fkey"
+            columns: ["user_a"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "balances_user_b_fkey"
+            columns: ["user_b"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      day_payments: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          paid_by: string
+          total_amount: number
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          paid_by: string
+          total_amount: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          paid_by?: string
+          total_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "day_payments_paid_by_fkey"
+            columns: ["paid_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          date: string
+          food_item: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          food_item: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          food_item?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      split_details: {
+        Row: {
+          amount: number
+          day_payment_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          day_payment_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          day_payment_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "split_details_day_payment_id_fkey"
+            columns: ["day_payment_id"]
+            isOneToOne: false
+            referencedRelation: "day_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "split_details_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar: string
+          created_at: string
+          id: string
+          name: string
+          name_lower: string
+        }
+        Insert: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          name: string
+          name_lower?: string
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          id?: string
+          name?: string
+          name_lower?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
