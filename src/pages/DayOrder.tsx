@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
@@ -16,14 +16,24 @@ import { toast } from 'sonner';
 export default function DayOrder() {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const { orders, loading, addOrder, updateOrder, deleteOrder } = useOrders(date!);
   const { payment, splitBill } = usePayment(date!);
   const [foodItem, setFoodItem] = useState('');
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [splitOpen, setSplitOpen] = useState(false);
 
-  if (!user) { navigate('/'); return null; }
+  useEffect(() => {
+    if (!user && !userLoading) navigate('/');
+  }, [user, userLoading, navigate]);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <span className="text-5xl">🐯</span>
+      </div>
+    );
+  }
 
   const myOrder = orders.find(o => o.user_id === user.id);
   const isSplit = !!payment;
