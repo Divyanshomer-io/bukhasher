@@ -6,6 +6,7 @@ import { useUser } from '@/hooks/useUser';
 import { LoginForm } from '@/components/LoginForm';
 import { CalendarView } from '@/components/CalendarView';
 import { BalanceSummary } from '@/components/BalanceSummary';
+import { NotificationBell } from '@/components/NotificationBell';
 import { MEME_QUOTES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 
@@ -18,7 +19,6 @@ export default function Index() {
     setQuote(MEME_QUOTES[Math.floor(Math.random() * MEME_QUOTES.length)]);
   }, []);
 
-  // Auto-redirect logged in users to calendar (show calendar directly)
   const [showProfile, setShowProfile] = useState(false);
 
   if (loading) {
@@ -89,6 +89,7 @@ export default function Index() {
                 </div>
               </div>
               <div className="flex gap-1">
+                <NotificationBell userId={user.id} />
                 <Button variant="ghost" size="icon" onClick={() => setShowProfile(true)} className="rounded-xl">
                   <span className="text-sm">✏️</span>
                 </Button>
@@ -108,7 +109,7 @@ export default function Index() {
             <div>
               <h2 className="font-display font-bold text-lg mb-3 text-foreground">💳 My Balances</h2>
               <div className="glass rounded-2xl p-4">
-                <BalanceSummary userId={user.id} />
+                <BalanceSummary userId={user.id} userName={user.name} />
               </div>
             </div>
           </>

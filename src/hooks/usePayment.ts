@@ -123,6 +123,30 @@ export function usePayment(date: string) {
           .insert({ user_a: userA, user_b: userB, net_amount: adjustment });
       }
     }
+
+    // Get payer name for notifications
+    const { data: payerData } = await supabase
+      .from('users')
+      .select('name')
+      .eq('id', payerId)
+      .single();
+
+    const payerName = payerData?.name || 'Someone';
+
+    // Create notifications for non-payer users
+    const notifs = splits
+      .filter(s => s.user_id !== payerId)
+      .map(s => ({
+        user_id: s.user_id,
+        type: 'BILL_SPLIT' as const,
+        message: `${payerName} dropped ₹${totalAmount.toFixed(0)} for ${date} 🍕 you owe ₹${s.amount.toFixed(0)}`,
+        related_date: date,
+        amount: s.amount,
+      }));
+
+    if (notifs.length > 0) {
+      await supabase.from('notifications').insert(notifs);
+    }
   };
 
   return { payment, splitDetails, loading, splitBill };
