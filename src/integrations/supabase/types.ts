@@ -82,6 +82,47 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          amount: number | null
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          related_date: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          related_date?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          related_date?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string
@@ -108,6 +149,45 @@ export type Database = {
           {
             foreignKeyName: "orders_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settlements: {
+        Row: {
+          amount: number
+          created_at: string
+          from_user_id: string
+          id: string
+          to_user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          from_user_id: string
+          id?: string
+          to_user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settlements_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlements_to_user_id_fkey"
+            columns: ["to_user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
