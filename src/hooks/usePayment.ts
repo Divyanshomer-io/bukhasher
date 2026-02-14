@@ -92,36 +92,40 @@ export function usePayment(date: string) {
 
     if (splitError) throw splitError;
 
-    // Update balances
-    for (const split of splits) {
-      if (split.user_id === payerId) continue;
+    // Update balances (wrapped in try-catch so notifications still send)
+    try {
+      for (const split of splits) {
+        if (split.user_id === payerId) continue;
 
-      const [userA, userB] =
-        split.user_id < payerId
-          ? [split.user_id, payerId]
-          : [payerId, split.user_id];
+        const [userA, userB] =
+          split.user_id < payerId
+            ? [split.user_id, payerId]
+            : [payerId, split.user_id];
 
-      // net_amount positive means user_a owes user_b
-      const adjustment =
-        split.user_id < payerId ? split.amount : -split.amount;
+        // net_amount positive means user_a owes user_b
+        const adjustment =
+          split.user_id < payerId ? split.amount : -split.amount;
 
-      const { data: existing } = await supabase
-        .from('balances')
-        .select('id, net_amount')
-        .eq('user_a', userA)
-        .eq('user_b', userB)
-        .single();
-
-      if (existing) {
-        await supabase
+        const { data: existing } = await supabase
           .from('balances')
-          .update({ net_amount: Number(existing.net_amount) + adjustment })
-          .eq('id', existing.id);
-      } else {
-        await supabase
-          .from('balances')
-          .insert({ user_a: userA, user_b: userB, net_amount: adjustment });
+          .select('id, net_amount')
+          .eq('user_a', userA)
+          .eq('user_b', userB)
+          .maybeSingle();
+
+        if (existing) {
+          await supabase
+            .from('balances')
+            .update({ net_amount: Number(existing.net_amount) + adjustment })
+            .eq('id', existing.id);
+        } else {
+          await supabase
+            .from('balances')
+            .insert({ user_a: userA, user_b: userB, net_amount: adjustment });
+        }
       }
+    } catch (balanceErr) {
+      console.error('Balance update error (notifications will still send):', balanceErr);
     }
 
     // Get payer name for notifications
