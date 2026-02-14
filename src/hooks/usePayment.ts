@@ -145,7 +145,12 @@ export function usePayment(date: string) {
       }));
 
     if (notifs.length > 0) {
-      await supabase.from('notifications').insert(notifs);
+      const { error: notifError } = await supabase.from('notifications').insert(notifs);
+      if (notifError) {
+        console.error('Failed to insert notifications:', notifError);
+      } else {
+        console.log('Notifications inserted successfully:', notifs.length);
+      }
     }
   };
 
