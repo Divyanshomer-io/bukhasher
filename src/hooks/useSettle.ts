@@ -38,12 +38,15 @@ export function useSettle() {
     }
 
     // Send notification to receiver
-    await supabase.from('notifications').insert({
+    const { error: notifError } = await supabase.from('notifications').insert({
       user_id: toUserId,
       type: 'PAYMENT_SETTLED',
       message: `${fromUserName} paid you ₹${amount.toFixed(0)} 💸 debt cleared fam`,
       amount,
     });
+    if (notifError) {
+      console.error('Failed to insert settlement notification:', notifError);
+    }
   };
 
   return { settlePayment };
